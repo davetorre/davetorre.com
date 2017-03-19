@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta name="google-site-verification" content="7QX5bllzoht5GelZ7a3zTq3HsfxspycZ0xVDcvw7cg0" />
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Dave Torre</title>
+  <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+<h1>The Option Type</h1>
+
+<p>I've been writing some <a href="http://www.rust-lang.org">Rust</a> recently and have had my first experiences with the Option type. In this post I'll explain a problem that optionals aim to alleviate and show how they work in Rust.</p>
+
+<h2>The Problem</h2>
+
+<p>Let's say I'm writing a method in Java that takes a list of names and returns the shortest one. [1]</p>
+
+<pre class="prettyprint"><code>String getShortest(ArrayList&lt;String&gt; names) {
+    String shortest = names.get(0);
+    for (String name : names) {
+        if (name.length() &lt; shortest.length()) {
+            shortest = name;
+        }
+    }
+    return shortest;
+}
+</code></pre>
+
+<p>This solution will compile and work fine in many cases. If we have a list of ("Dave", "LaToya", "Jake", "Ben") and ask for the shortest name, we'll get "Ben" back. But if we pass in an empty list, <code>names.get(0)</code> will throw an <code>IndexOutOfBoundsException</code>.</p>
+
+<p>One way to prevent that exception is to first check if the list is empty, and return null in that case as follows.</p>
+
+<pre class="prettyprint"><code>String getShortest(ArrayList&lt;String&gt; names) {
+    String shortest = null;
+    if (names.size() &gt; 0) {
+        shortest = names.get(0);
+        for (String name : names) {
+            if (name.length() &lt; shortest.length()) {
+                shortest = name;
+            }
+        }
+    }
+    return shortest;
+}
+</code></pre>
+
+<p>Null, which is commonly defined to mean "nothing" or "undefined", makes some sense here. If I ask, "What's the shortest name in an empty list of names?" The answer is, "There isn't one." And it's OK to return null as far as the compiler is concerned, as null can stand in for any object in Java.</p>
+
+<p>But returning null in this way is not very communicative. The method's signature says the method returns a String. It doesn't say anything about returning null when given an empty list. Consider the following situation:</p>
+
+<pre class="prettyprint"><code>double doCalculation(ArrayList&lt;String&gt; names) {
+    return getShortest(names).length() * Math.PI;
+}
+
+ArrayList&lt;String&gt; myNames = getNames(); // unfortunately, an empty list
+double answer = doCalculation(myNames);
+</code></pre>
+
+<p>As a caller of <code>getShortest</code>, <code>doCalculation</code> should probably check if its list is empty before asking for the shortest name. But an empty list is an edge case that might not immediately occur to us. After we compile and run the program, if <code>doCalculation</code> does get called with an empty list, a runtime null-pointer exception will occur, possibly resulting in a crash.</p>
+
+<p>When debugging the problem later, it won't be immediately obvious where that null came from. Running the above example with an empty list returned:</p>
+
+<pre class="prettyprint"><code class="bash language-bash">Exception in thread "main" java.lang.NullPointerException
+    at MyProgram.doCalculation(MyProgram.java:19)
+    at MyProgram.main(MyProgram.java:25)
+</code></pre>
+
+<p>The thought process goes something like, "So a method was probably called on a null on line 19. So <code>getShortest(names)</code> must be null. So I must've called <code>getShortest</code> with an empty list. Therefore I need to either not send <code>getShortest</code> an empty list or do a null check on whatever it returns."</p>
+
+<h2>The Option Option</h2>
+
+<p>Optional types are basically compiler-enforced null-checks. If a method returns an Option, any caller of that method must deal with it in some way or the code won't compile. As a bonus, the Option type in the method's signature is a dead giveaway to developers that the method may return null. This is very similar to the way checked exceptions work in Java.</p>
+
+<p>Here's <code>getShortest</code> written in Rust: [2]</p>
+
+<pre class="prettyprint"><code class="rust language-rust">fn get_shortest(names: Vec&lt;&amp;str&gt;) -&gt; Option&lt;&amp;str&gt; {
+    if names.len() &gt; 0 {
+        let mut shortest = names[0];
+        for name in names.iter() {
+            if name.len() &lt; shortest.len() {
+                shortest = *name;
+            }
+        }
+        Some(shortest)
+    } else {
+        None
+    }
+}
+</code></pre>
+
+<p>Using the returned <code>Option&lt;&amp;str&gt;</code> as if it's a regular string will result in a compilation error.</p>
+
+<pre class="prettyprint"><code class="rust language-rust">fn do_calculation(names: Vec&lt;&amp;str&gt;) -&gt; f64 {
+    get_shortest(names).len() as f64 * std::f64::consts::PI
+}
+</code></pre>
+
+<pre class="prettyprint"><code class="bash language-bash">// compilation result
+src/main.rs:16:25: 16:30 error: type `core::option::Option&lt;&amp;str&gt;` does not implement any method in scope named `len`
+src/main.rs:16     get_shortest(names).len() as f64 * std::f64::consts::PI
+</code></pre>
+
+<p>This is because <a href="http://doc.rust-lang.org/std/option/enum.Option.html">Option is an enum</a> in Rust with two possibilities: <code>None</code> or <code>Some(T)</code>. <code>T</code> stands for the type, in our case <code>&amp;str</code>. As an aside, we could define and use a similar enum of our own like this:</p>
+
+<pre class="prettyprint"><code class="rust language-rust">enum MyEnum&lt;T&gt; {
+    Yes(T),
+    No,
+}
+
+let thing1: MyEnum&lt;&amp;str&gt; = MyEnum::Yes("some string");
+let thing2: MyEnum&lt;&amp;str&gt; = MyEnum::No;
+</code></pre>
+
+<p>To get the name value from the Option that <code>get_shortest</code> returned, we could call the <code>unwrap()</code> function (functions can be defined on enums in Rust). However, using that function takes us even farther back than our old situation of a possible null pointer exception. The program will panic (<a href="http://doc.rust-lang.org/book/error-handling.html">crash</a>) as soon as <code>unwrap()</code> is called on that <code>None</code> Option. It won't wait until some other function is called on the <code>None</code> later.</p>
+
+<p>The preferred way to unwrap an Option is to use a <code>match</code> (a convenient, switch-like statement) to deal with each case separately.</p>
+
+<pre class="prettyprint"><code class="rust language-rust">fn do_calculation(names: Vec&lt;&amp;str&gt;) -&gt; f64 {
+    match get_shortest(names) {
+        Some(x) =&gt; x.len() as f64 * std::f64::consts::PI,
+        None    =&gt; // handle the null case here
+    }
+}
+</code></pre>
+
+<h2>Concluding Thoughts</h2>
+
+<p>Optional types are not a catch-all solution for dealing with edge cases. Depending on the situation and the language, throwing an exception or implementing the <a href="http://en.wikipedia.org/wiki/Null_Object_pattern">Null Object Pattern</a> might be a better choice. (Imagine having to unwrap the result every time you ask for the nth element of an array, just to prevent an "out of bounds" exception.) But optionals are a nice tool to have. They communicate that a null return is possible, and force developers to handle that possibility one way or another.</p>
+
+<p>[1] There are shorter ways to get the shortest String from a list in Java. Here's a Java 8 version:</p>
+
+<pre class="prettyprint"><code>String getShortest(ArrayList&lt;String&gt; names) {
+    return names.stream()
+                .min(Comparator.comparing(String::length))
+                .get();
+}
+</code></pre>
+
+<p>[2] A shorter version using Rust:</p>
+
+<pre class="prettyprint"><code class="rust language-rust">fn get_shortest(names: Vec&lt;String&gt;) -&gt; Option&lt;String&gt; {
+    names.iter().min_by(|name| name.len())
+}
+</code></pre>
+  <body>
+</html>

@@ -1,0 +1,41 @@
+body {
+  margin: 60px auto;
+  width: 720px;
+  font-family: Helvetica;
+  font-size: 12pt;
+  line-height: 18pt;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 20pt;
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+}
+
+h2 {
+  font-size: 16pt;
+  margin-top: 1.5em;
+}
+
+pre {
+  font-size: 11pt;
+  line-height: 1.4em;
+  background-color: #ffe6b5;
+  overflow-x: scroll;
+}
+
+pre.prettyprint {
+  padding: 5px 10px;
+}
+
+@media screen and (max-width: 720px) {
+  body {
+    margin: 10px auto;
+    padding: 0 20px 0 20px;
+    width: auto;
+  }
+}
