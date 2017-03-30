@@ -11,7 +11,7 @@
 
 <p>In Java, we use <code>InputStream</code> objects to read data. The smallest amount of data we can read at once is eight bits (one byte), using the <code>read()</code> method. Java has a <code>byte</code> data type, but the <code>read()</code> method doesn't use it. Instead, it returns each byte of data as an <code>int</code>.</p>
 
-<p>Presumably, this is because the <code>read()</code> method wants to use one of its return values to indicate that it has reached the end of the stream. The <code>byte</code> data type, and bytes in general, can only represent 256 different values, and whatever stream you're reading from probably wants to use all 256 of them. Therefore, there wouldn't be any values left to tell the <code>read()</code> method when to stop reading. <code>read()</code> gets around this by returning each byte as an <code>int</code>, a data type that can store many more than 256 values. </p>
+<p>Presumably, this is because the <code>read()</code> method wants to use one of its return values (-1) to indicate that it has reached the end of the stream. The <code>byte</code> data type, and bytes in general, can only represent 256 different values, and whatever stream you're reading from probably wants to use all 256 of them. Therefore, there wouldn't be any values left to tell the <code>read()</code> method when to stop reading. <code>read()</code> gets around this by returning each byte as an <code>int</code>, a data type that can store many more than 256 values. </p>
 
 <p>To find out what a returned <code>int</code> looks like, I did an experiment. </p>
 
@@ -38,9 +38,7 @@ System.out.println(myInt); // 253
 
 <p>00000000000000000000000011111101</p>
 
-<p>That looks a lot like my original byte, but with a bunch of zeros added to it. The <code>read()</code> method must be doing just that: tacking on a bunch of zeros. It could then theoretically add a new number that is all ones, and know that it will not only not interfere with the byte's data, but also recognize it as a place to stop. The two's complement that is always all ones (1111, 1111, etc.) is the value -1. Therefore, -1 is the value <code>read()</code> uses for the end of the stream.</p>
-
-<p>I can change my returned value of 253 back to my original value of -3 with a cast, since all casting to a <code>byte</code> does is get rid of everything but the right-most eight bits.</p>
+<p>That looks a lot like my original byte, but with a bunch of zeros added to it. The <code>read()</code> method must be doing just that: tacking on a bunch of zeros. I can change 253 back to my original value of -3 with a cast, since all casting to a <code>byte</code> does is get rid of everything but the right-most eight bits.</p>
 
 <pre class="prettyprint"><code>byte gotMyByteBack = (byte)myInt; // 11111101
 System.out.println(gotMyByteBack); // -3
