@@ -1,0 +1,12 @@
+[submodule "learnyourfreqs"]
+	path = learnyourfreqs
+	url = git@github.com:davetorre/learnyourfreqs.git
+[submodule "play-alongs/seatdriver"]
+	path = play-alongs/seatdriver
+	url = git@github.com:davetorre/seatdriver.git
+[submodule "play-alongs/everybody"]
+	path = play-alongs/everybody
+	url = git@github.com:davetorre/everybody.git
+[submodule "play-alongs/nov2"]
+	path = play-alongs/nov2
+	url = git@github.com:davetorre/nov2.git

@@ -1,0 +1,33 @@
+body {
+  margin: 60px auto;
+  font-family: Times, 'Times New Roman', serif;
+  background-color: #D6D6D6;
+  color: #000000;
+  width: 540px;
+  font-size: 18px;
+  line-height: 26px;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 38px;
+  font-weight: bold;
+  margin-bottom: 20px;  
+}
+
+h2 {
+  margin-top: 40px;
+  margin-bottom: 15px;
+  font-size: 26px;
+  font-weight: normal;
+  text-align: center;
+}
+
+@media screen and (max-width: 540px) {
+  body {
+    margin: 10px auto;
+    padding: 0 20px 0 20px;
+    width: auto;
+    word-wrap: break-word;
+  }
+}
