@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Why Are JS Numbers Bad With $$$?e"
+title: "Why Are JS Numbers Bad With $$$?"
 date: 2016-04-25
 ---
 

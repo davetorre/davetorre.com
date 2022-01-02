@@ -1,0 +1,39 @@
+---
+layout: default
+---
+
+<div class="home">
+  <div class="home-section">
+    {%- if site.posts.size > 0 -%}
+      <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
+      <ul class="post-list">
+        {%- for post in site.posts -%}
+        <li>
+          {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+          <span class="post-meta">{{ post.date | date: date_format }}</span>
+          <p>
+            <a href="{{ post.url | relative_url }}">
+              {{ post.title | escape }}
+            </a>
+          </p>
+          {%- if site.show_excerpts -%}
+            {{ post.excerpt }}
+          {%- endif -%}
+        </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+
+  <div class="home-section">
+    <h2>Projects</h2>
+    <p><a href="/play-alongs">Play-Alongs</a> - Play along with songs I wrote using your keyboard and mouse.</p>
+    <p><a href="/learnyourfreqs">Learn Your Freqs</a> - Knowing how different frequencies sound can help engineers remove feedback from amplified music and make it sound better in general. This site generates random frequencies for practicing that skill.</p>
+  </div>
+
+  <div class="home-section">
+    <h2>More</h2>
+    <p>You can also find me on <a href="https://github.com/davetorre">GitHub</a> and <a href="https://soundcloud.com/dave_torre">SoundCloud</a>.</p>
+    <p><a href="mailto:vidtorre@gmail.com">Email me</a></p>
+  </div>
+</div>

@@ -10,7 +10,7 @@ But it seems to favor configuration over convention, flexibility over ease-of-us
 Say I want to add the number two to a bunch of numbers.
 I might write:
 
-```
+```javascript
 var addTwo = function (x) {
     return x + 2;
 };
@@ -19,7 +19,7 @@ var addTwo = function (x) {
 But you could argue that the number 2 is a dependency.
 Why not inject it?
 
-```
+```javascript
 var add = function (x, y) {
     return x + y;
 };
@@ -32,7 +32,7 @@ Which one is better?
 
 In Backbone projects I've worked on, views are composed of smaller views.
 
-```
+```javascript
 class SmallView extends Backbone.View
   render: -&gt;
     @$el.html('some text')
@@ -53,14 +53,14 @@ new App().start()
 BigView depends on SmallView and App depends on BigView.
 If we inject those dependencies we get:
 
-```
+```javascript
 new App(new BigView(new SmallView())).start()
 ```
 
 Not so bad at the moment.
 But oftentimes the BigView will depend on several smaller views, and those on other smaller views.
 
-```
+```javascript
 new App(new BigView(new SmallView1(), new SmallView2(new SmallerView1())).start()
 ```
 
@@ -75,7 +75,7 @@ What I'm saying is, sometimes it makes sense to depend on concretions.
 It does mean that I can't reuse BigView with a different SmallView unfortunately.
 But I can very easily use BigView or SmallView separately:
 
-```
+```javascript
 new BigView()
 new SmallView()
 ```
@@ -85,7 +85,7 @@ new SmallView()
 I started a tic tac toe game recently for fun and realized that I'm always asking this question about if something is easy to work with and also easy to extend.
 I started with the players. Here were some ideas for how to create them:
 
-```
+```javascript
 new MinimaxPlayer()
 new ConsolePlayer()
 new MinimaxPlayer('X')
@@ -97,7 +97,7 @@ new HumanPlayer('O', consoleIO)
 I really liked the idea of a player as being some object that took a token in its constructor, and had a move function that took a board and returned a new board with a move made with the token.
 To get different types of players I'd pass in a `chooseMove` function that Player's move function could pass a board to for deciding which space to claim before returning the new board.
 
-```
+```javascript
 new Player('X', chooseConsoleMove)
 new Player('O', chooseMinimaxMove)
 ```
@@ -107,7 +107,7 @@ If I wanted other types of UIs in the future, I'd be happy to create new `choose
 
 Here's what I ended up with for the game runner:
 
-```
+```javascript
 var run = function (board, currentPlayer, otherPlayer) {
     if (isTttGameOver(board)) {
         return board;
@@ -122,7 +122,7 @@ I passed the players in because I wanted their tokens and who goes first to be d
 
 Then came the question of whether to pass in the `isTttGameOver` function. If I passed it in I'd allow the run function to be reused with different game rules. But I didn't think the rules would change any time soon and liked the simplicity of passing a board and two players to a `run` function too much to do that:
 
-```
+```javascript
 var player1 = new Player('X', chooseConsoleMove);
 var player2 = new Player('O', chooseMinimaxMove);
 var emptyBoard = ['', '', '', '', '', '', '', '', ''];
