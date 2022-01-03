@@ -23,3 +23,6 @@ aws s3 cp _site s3://davetorre.com --recursive --exclude "*README.md"
 ## Notes
 Some projects were brought in as submodules.
 This was done by going to desired parent directory and running `git submodule add <repo-url>`.
+
+## Questions
+Add Cloudfront? Do I need to set `--cache-control` when syncing with s3 bucket?
