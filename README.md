@@ -8,18 +8,12 @@ bundle exec jekyll serve
 Browse to http://localhost:4000
 
 ## Deploy
-* Find the S3 bucket in the AWS console.
-* Delete everything in the bucket.
-* Upload the files and folders from this repo's _site directory. Remember to remove the README.md files!
-
-OR
-
-Use the aws cli
-```
-aws s3 rm s3://davetorre.com --recursive
-aws s3 cp _site s3://davetorre.com --recursive --exclude "*README.md"
-```
+Merging or pushing to main should build and deploy to S3 via a GitHub action.
+Otherwise, you could replace the S3 bucket contents with the contents of the _site directory manually (don't copy the README.md files!).
 
 ## Notes
 Some projects were brought in as submodules.
 This was done by going to desired parent directory and running `git submodule add <repo-url>`.
+
+## Future
+Add Cloudfront? Do I need to set `--cache-control` when syncing with the s3 bucket?
