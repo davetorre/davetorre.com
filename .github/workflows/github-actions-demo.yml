@@ -4,6 +4,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
+      - run: ls -la
       - name: Ruby
         uses: ruby/setup-ruby@v1
         with:
