@@ -4,14 +4,20 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
+      - name: Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: "Build"
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-      - run: bundle exec jekyll build
-      - run: aws --version
       - run: aws s3 rm s3://test.davetorre.com --recursive
       - run: aws s3 cp _site s3://test.davetorre.com --recursive --exclude "*README.md"
       - run: echo "🍏 This job's status is ${{ job.status }}."
