@@ -14,6 +14,4 @@ Otherwise, you could replace the S3 bucket contents with the contents of the _si
 ## Notes
 Some projects were brought in as submodules.
 This was done by going to desired parent directory and running `git submodule add <repo-url>`.
-
-## Future
-Add Cloudfront? Do I need to set `--cache-control` when syncing with the s3 bucket?
+To pull down the submodules for the first time, run `git submodule update --init --recursive`.
